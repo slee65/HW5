@@ -207,7 +207,7 @@ short temp;
 
 
 
-int i,j,x,u=0;
+//int i,j,x,u=0;
  display_init();
  
  int startrow=15, startcol=1, element,row;
@@ -270,8 +270,13 @@ acc_read_register(OUT_X_L_M, (unsigned char *) mags, 6);
 // read the temperature data. Its a right justified 12 bit two's compliment number
 
 acc_read_register(TEMP_OUT_L, (unsigned char *) &temp, 2);
-u=0;
-     sprintf(buffer,"x: %d y: %d z:%d \n m1: %d m2: %d m3: %d \n temp: %d", accels[0],accels[1],accels[2],mags[0],mags[1],mags[2],temp);
+//u=0;
+
+makebar(accels);
+display_clear();
+
+
+   /*  sprintf(buffer,"x: %d y: %d z:%d \n m1: %d m2: %d m3: %d \n temp: %d", accels[0],accels[1],accels[2],mags[0],mags[1],mags[2],temp);
 
      while(buffer[u]){
      row=buffer[u]-0x20;
@@ -289,11 +294,11 @@ u=0;
 
      }
      u++;
-
-
  }
+    */
+         
 
-     display_draw();
+     //display_draw();
 
 if (PORTBbits.RB13 == 0) {
     LATBINV = 0b10000000;
@@ -342,3 +347,62 @@ int makebinary(int num,int move) {  //num is binary representation of element of
 
 
 }
+
+
+//x direction is ,,, use screen clear function
+void makebar(short *accels) {
+    int centerx=64, centery=32;
+    short xbar=accels[0],ybar=accels[1];
+    if (accels[0]>0) {
+        //int xbar=accels[0];
+        int xlength= ((float)64/(float)16000)*xbar;
+
+        int i;
+        for (i=0;i<xlength;i++){
+            display_pixel_set(centery,centerx-i,1);
+
+        }
+    }
+
+     if (accels[0]<0) {
+         short xnegbar= -1*xbar;
+         int xlength=((float)64/(float)16000)*xnegbar;
+
+         int j;
+        for (j=0;j<xlength;j++){
+
+         display_pixel_set(centery,centerx+j,1);
+
+        }
+
+     }
+
+     if (accels[1]>0){
+         int ylength=((float)32/(float)16000)*ybar;
+         int k;
+         for (k=0;k<ylength;k++){
+
+             display_pixel_set(centery-k,centerx,1);
+
+        }
+     }
+
+
+    if (accels[1]<0) {
+        short ynegbar=-1*ybar;
+        int ylength=((float)32/(float)16000)*ynegbar;
+
+        int m;
+
+        for (m=0;m<ylength;m++){
+            display_pixel_set(centery+m,centerx,1);
+        }
+    }
+
+
+        display_draw();
+
+    }
+
+
+
